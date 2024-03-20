@@ -90,11 +90,7 @@ def main():
     zero_merged_df = filter_zero_delay(merged_df)
     # Separate dataframes by day, hour, and delay status
     non_zero_day_hour_delay_dataframes = separate_by_day_hour(non_zero_merged_df)
-    zero_day_hour_delay_dataframes = separate_by_day_hour(zero_merged_df)
     day_hour_delay_dataframes = separate_by_day_hour(merged_df)
-    # Print size of each dataframe
-    #print_dataframes_info(non_zero_day_hour_delay_dataframes)
-    #print_dataframes_info(zero_day_hour_delay_dataframes)
     average_delays = calculate_average_delay(non_zero_day_hour_delay_dataframes)
     frequency = calculate_hourly_non_zero_delay_percentage(day_hour_delay_dataframes)
     print_averages_and_frequency(average_delays,frequency)
