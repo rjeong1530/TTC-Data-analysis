@@ -16,6 +16,22 @@ def filter_non_zero_delay(df):
     """Filters out rows with Min Delay not equal to 0."""
     return df[df['Min Delay'] != 0]
 
+
+def calculate_average_delay_times_min_delay(day_hour_dataframes,original_data):
+    """Calculates the average number of delays per hour for each date of each day type."""
+    results = {}
+    for day, hour_data in day_hour_dataframes.items():
+        print(hour_data)
+        unique_dates = original_data[original_data['Day'] == day]['Date'].nunique()        
+        for hour, df in hour_data.items():
+            # Calculate average min delay time
+            avg_min_delay_time = df['Min Delay'].mean()
+            # Calculate average delay occurrences per hour
+            avg_delay_occurrences_per_hour = len(df) / unique_dates
+            results.setdefault(day, {}).setdefault(hour, {'Avg_Min_Delay_Time': avg_min_delay_time, 'Avg_Delay_Occurrences_Per_Hour': avg_delay_occurrences_per_hour})
+    return results
+
+
 def separate_by_day_hour_filter(df):
     """Separates the dataframe into separate dataframes based on day and hour, excluding 3 am to 5 am."""
     df['Time'] = pd.to_datetime(df['Time'])
@@ -128,9 +144,13 @@ def main():
     df_2023 = read_csv_from_url(url_2023)
     df_2024 = read_csv_from_url(url_2024)
     merged_df = merge_dataframes([df_2021, df_2022, df_2023, df_2024])
-    
-    # Filter rows with Min Delay > 0
     non_zero_merged_df = filter_non_zero_delay(merged_df)
+    non_zero_day_hour_delay_dataframes = separate_by_day_hour(non_zero_merged_df)
+    #print(non_zero_day_hour_delay_dataframes)
+    result = calculate_average_delay_times_min_delay(non_zero_day_hour_delay_dataframes,non_zero_merged_df)
+    save_to_csv(result,"average_delays_bus.csv")
+    # Filter rows with Min Delay > 0
+    """ non_zero_merged_df = filter_non_zero_delay(merged_df)
     zero_merged_df = filter_zero_delay(merged_df)
     # Separate dataframes by day, hour, and delay status
     non_zero_day_hour_delay_dataframes = separate_by_day_hour(non_zero_merged_df)
@@ -142,6 +162,6 @@ def main():
     save_to_csv(average_delays, 'average_delays_bus.csv')
     
     # Save frequency data to CSV
-    save_to_csv(frequency, 'frequency_data_bus.csv') 
+    save_to_csv(frequency, 'frequency_data_bus.csv')  """
 if __name__ == "__main__":
     main()
