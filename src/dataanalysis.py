@@ -63,6 +63,7 @@ def calculate_hourly_non_zero_delay_percentage(day_hour_dataframes):
 def save_to_csv(data, filename):
     """Saves the data to a CSV file."""
     df = pd.DataFrame(data)
+    df = df.reindex(range(24), fill_value=0)
     df.to_csv(filename, index=True)
 
 def print_averages_and_frequency(average_delays, hourly_non_zero_delay_percentage):
@@ -77,7 +78,7 @@ def print_averages_and_frequency(average_delays, hourly_non_zero_delay_percentag
             print(f"{day}, {hour}:00 - Frequency of Non-zero Delay: {percentage:.2f}%")
 
 def main():
-    """     # URLs of the CSV files
+        # URLs of the CSV files
     url_2021 = 'https://raw.githubusercontent.com/rjeong1530/TTC-Data-analysis/main/csv/ttc-subway-delay-data-2021.csv'
     url_2022 = 'https://raw.githubusercontent.com/rjeong1530/TTC-Data-analysis/main/csv/ttc-subway-delay-data-2022.csv'
     url_2023 = 'https://raw.githubusercontent.com/rjeong1530/TTC-Data-analysis/main/csv/ttc-subway-delay-data-2023.csv'
@@ -104,8 +105,8 @@ def main():
     save_to_csv(average_delays, 'average_delays_subway.csv')
     
     # Save frequency data to CSV
-    save_to_csv(frequency, 'frequency_data_subway.csv') """
-    url_2021 = 'https://raw.githubusercontent.com/rjeong1530/TTC-Data-analysis/main/csv/ttc-bus-delay-data-2021.csv'
+    save_to_csv(frequency, 'frequency_data_subway.csv')
+    """ url_2021 = 'https://raw.githubusercontent.com/rjeong1530/TTC-Data-analysis/main/csv/ttc-bus-delay-data-2021.csv'
     url_2022 = 'https://raw.githubusercontent.com/rjeong1530/TTC-Data-analysis/main/csv/ttc-bus-delay-data-2022.csv'
     url_2023 = 'https://raw.githubusercontent.com/rjeong1530/TTC-Data-analysis/main/csv/ttc-bus-delay-data-2023.csv'
     url_2024 = 'https://raw.githubusercontent.com/rjeong1530/TTC-Data-analysis/main/csv/ttc-bus-delay-data-2024.csv'
@@ -129,6 +130,6 @@ def main():
     save_to_csv(average_delays, 'average_delays_bus.csv')
     
     # Save frequency data to CSV
-    save_to_csv(frequency, 'frequency_data_bus.csv') 
+    save_to_csv(frequency, 'frequency_data_bus.csv')  """
 if __name__ == "__main__":
     main()
