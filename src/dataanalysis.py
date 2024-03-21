@@ -77,7 +77,7 @@ def print_averages_and_frequency(average_delays, hourly_non_zero_delay_percentag
             print(f"{day}, {hour}:00 - Frequency of Non-zero Delay: {percentage:.2f}%")
 
 def main():
-    # URLs of the CSV files
+    """     # URLs of the CSV files
     url_2021 = 'https://raw.githubusercontent.com/rjeong1530/TTC-Data-analysis/main/csv/ttc-subway-delay-data-2021.csv'
     url_2022 = 'https://raw.githubusercontent.com/rjeong1530/TTC-Data-analysis/main/csv/ttc-subway-delay-data-2022.csv'
     url_2023 = 'https://raw.githubusercontent.com/rjeong1530/TTC-Data-analysis/main/csv/ttc-subway-delay-data-2023.csv'
@@ -104,6 +104,31 @@ def main():
     save_to_csv(average_delays, 'average_delays_subway.csv')
     
     # Save frequency data to CSV
-    save_to_csv(frequency, 'frequency_data_subway.csv')
+    save_to_csv(frequency, 'frequency_data_subway.csv') """
+    url_2021 = 'https://raw.githubusercontent.com/rjeong1530/TTC-Data-analysis/main/csv/ttc-bus-delay-data-2021.csv'
+    url_2022 = 'https://raw.githubusercontent.com/rjeong1530/TTC-Data-analysis/main/csv/ttc-bus-delay-data-2022.csv'
+    url_2023 = 'https://raw.githubusercontent.com/rjeong1530/TTC-Data-analysis/main/csv/ttc-bus-delay-data-2023.csv'
+    url_2024 = 'https://raw.githubusercontent.com/rjeong1530/TTC-Data-analysis/main/csv/ttc-bus-delay-data-2024.csv'
+    # Read CSV files from URLs
+    df_2021 = read_csv_from_url(url_2021)
+    df_2022 = read_csv_from_url(url_2022)
+    df_2023 = read_csv_from_url(url_2023)
+    df_2024 = read_csv_from_url(url_2024)
+    merged_df = merge_dataframes([df_2021, df_2022, df_2023, df_2024])
+    
+    # Filter rows with Min Delay > 0
+    non_zero_merged_df = filter_non_zero_delay(merged_df)
+    zero_merged_df = filter_zero_delay(merged_df)
+    # Separate dataframes by day, hour, and delay status
+    non_zero_day_hour_delay_dataframes = separate_by_day_hour(non_zero_merged_df)
+    day_hour_delay_dataframes = separate_by_day_hour(merged_df)
+    average_delays = calculate_average_delay(non_zero_day_hour_delay_dataframes)
+    frequency = calculate_hourly_non_zero_delay_percentage(day_hour_delay_dataframes)
+    print_averages_and_frequency(average_delays,frequency)
+    # Save average delays to CSV
+    save_to_csv(average_delays, 'average_delays_bus.csv')
+    
+    # Save frequency data to CSV
+    save_to_csv(frequency, 'frequency_data_bus.csv') 
 if __name__ == "__main__":
     main()
