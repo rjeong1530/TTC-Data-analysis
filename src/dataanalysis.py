@@ -50,15 +50,20 @@ def calculate_hourly_non_zero_delay_percentage(day_hour_dataframes):
     """Calculates the frequency of non-zero delay for each hour of each day."""
     hourly_non_zero_delay_percentage = {}
     for day, hour_dict in day_hour_dataframes.items():
+        total_non_zero_delay_count = sum(df[df['Min Delay'] != 0].shape[0] for df in hour_dict.values())
         for hour, df in hour_dict.items():
             non_zero_delay_count = df[df['Min Delay'] != 0].shape[0]
-            total_count = df.shape[0]
-            if total_count > 0:  # Avoid division by zero
-                non_zero_delay_percentage = (non_zero_delay_count / total_count) * 100
+            if total_non_zero_delay_count > 0:  # Avoid division by zero
+                hourly_non_zero_delay_percentage.setdefault(day, {}).setdefault(hour, (non_zero_delay_count / total_non_zero_delay_count) * 100)
             else:
-                non_zero_delay_percentage = 0
-            hourly_non_zero_delay_percentage.setdefault(day, {}).setdefault(hour, non_zero_delay_percentage)
+                hourly_non_zero_delay_percentage.setdefault(day, {}).setdefault(hour, 0)
     return hourly_non_zero_delay_percentage
+
+
+def save_to_csv(data, filename):
+    """Saves the data to a CSV file."""
+    df = pd.DataFrame(data)
+    df.to_csv(filename, index=True)
 
 def print_averages_and_frequency(average_delays, hourly_non_zero_delay_percentage):
     """Prints the averages and frequency nicely."""
@@ -66,10 +71,11 @@ def print_averages_and_frequency(average_delays, hourly_non_zero_delay_percentag
     for day, hour_dict in average_delays.items():
         for hour, average_delay in hour_dict.items():
             print(f"{day}, {hour}:00 - Average Delay: {average_delay:.2f} minutes")
-    print("\nFrequency of non-zero delay for each hour of each day:")
+    print("\nFrequency of non-zero delay for each day and hour:")
     for day, hour_dict in hourly_non_zero_delay_percentage.items():
         for hour, percentage in hour_dict.items():
             print(f"{day}, {hour}:00 - Frequency of Non-zero Delay: {percentage:.2f}%")
+
 def main():
     # URLs of the CSV files
     url_2021 = 'https://raw.githubusercontent.com/rjeong1530/TTC-Data-analysis/main/csv/ttc-subway-delay-data-2021.csv'
@@ -94,5 +100,10 @@ def main():
     average_delays = calculate_average_delay(non_zero_day_hour_delay_dataframes)
     frequency = calculate_hourly_non_zero_delay_percentage(day_hour_delay_dataframes)
     print_averages_and_frequency(average_delays,frequency)
+    # Save average delays to CSV
+    save_to_csv(average_delays, 'average_delays_subway.csv')
+    
+    # Save frequency data to CSV
+    save_to_csv(frequency, 'frequency_data_subway.csv')
 if __name__ == "__main__":
     main()
